@@ -9,7 +9,7 @@ const DB_NAME: string = String(process.env.DB_NAME);
 const DB_USER: string = String(process.env.DB_USER);
 const DB_PASSWORD: string = String(process.env.DB_PASSWORD);
 
-const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+export const sequelize = new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
     host: DB_HOST,
     port: DB_PORT,
     dialect: 'postgres', // Specify the correct dialect: 'postgres' for Neon
@@ -24,3 +24,12 @@ export const connectDB = async () => {
         console.error('Unable to connect to the database:', error);
     }
 };
+
+export async function createDatabase() {
+    try {
+        await sequelize.sync({ force: false }); // Creates tables if they don't exist.  `force: true` will drop existing tables!
+        console.log('Database and tables created successfully.');
+    } catch (error) {
+        console.error('Error creating database:', error);
+    }
+}

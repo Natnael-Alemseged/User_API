@@ -5,7 +5,8 @@ import router from 'express';
 import route from '../src/routes/index';
 import {logger} from "./middleware/logger";
 import {errorHandler} from "./middleware/errorHandler";
-import {connectDB} from "./config/db";
+import {connectDB, createDatabase} from "./config/db";
+import {createUser} from "./controllers/userController";
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.use(express.json());
 app.use(cors());
 
 connectDB();
+
+ // createDatabase();
 
 app.use(logger);
 
