@@ -20,34 +20,52 @@ export const createUser = async (req: Request, res: Response, next: NextFunction
             next(error);
         }
 
-        if ( !password) {
-            const error = Error('password must be at least 6 characters long');
+        if (!password) {
+            const error: Error = Error('password must be at least 6 characters long');
             (error as any).statusCode = 400;
 
             next(error);
         }
+        if (!password || password.length < 6) {
+            const error = new Error('Password must be at least 6 characters long');
+            (error as any).statusCode = 400;
+            return next(error);
+        }
+
+        if (!name) {
+            const error = new Error('Name is required');
+            (error as any).statusCode = 400;
+            return next(error);
+        }
+
+        if (email) {
+        }
+        // Ensure name is a string
+        const userName: string = String(name);
+
         if (email && password && name) {
-            const salt = await bcrypt. genSalt(10);
-            const hashedPassword = await bcrypt.hash(password, salt);
-            console.log(hashedPassword);
-            const newUser = await UserModel.create({
-                email,
-                password: hashedPassword, // Store the HASHED password
-                name,
+
+            const newUser: UserModel = await UserModel.create({
+                email: email,
+                password: password, // Store the HASHED password
+                name: userName,
                 createdAt: new Date(),
                 updatedAt: new Date(),
             });
 
             newUser.save();
 
-            res.status(201).send(`successfully created ${name} with email: ${email} and password: ${password}`);
+            const responseJson = {success:true ,message: 'successfully created user',data: newUser};
+
+            res.status(201).send(responseJson);
         } else {
             const error = new Error('Error creating user');
             next(error);
         }
     } catch (err) {
         console.error(err);
-        next('Failed to create user');
+        console.error('error creating user exception');
+        next(err);
     }
 };
 
